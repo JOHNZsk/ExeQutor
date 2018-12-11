@@ -1,4 +1,4 @@
-program executor;
+program exequtor;
 
 uses
   Vcl.Forms,
