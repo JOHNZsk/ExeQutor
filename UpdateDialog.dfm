@@ -8,6 +8,7 @@ object UpdateDlg: TUpdateDlg
   ParentFont = True
   OldCreateOrder = True
   Position = poScreenCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -27,7 +28,7 @@ object UpdateDlg: TUpdateDlg
     TabOrder = 0
     OnClick = Button1Click
   end
-  object Memo1: TMemo
+  object Memo1: TRichEdit
     AlignWithMargins = True
     Left = 8
     Top = 8
@@ -39,11 +40,18 @@ object UpdateDlg: TUpdateDlg
     Margins.Bottom = 8
     Align = alClient
     Color = clBtnFace
+    Font.Charset = EASTEUROPE_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     Lines.Strings = (
       'Memo1')
+    ParentFont = False
     ReadOnly = True
     ScrollBars = ssBoth
     TabOrder = 1
+    Zoom = 100
   end
   object DB: TFDConnection
     Params.Strings = (
@@ -75,10 +83,13 @@ object UpdateDlg: TUpdateDlg
   object Script: TFDScript
     SQLScripts = <>
     Connection = DB
+    ScriptOptions.EchoCommandTrim = 80
+    ScriptOptions.TrimConsole = True
     ScriptOptions.SQLDialect = 3
     Params = <>
     Macros = <>
     OnConsolePut = ScriptConsolePut
+    OnProgress = ScriptProgress
     OnError = ScriptError
     Left = 248
     Top = 16
