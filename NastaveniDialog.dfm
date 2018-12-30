@@ -1,0 +1,229 @@
+object NastaveniDlg: TNastaveniDlg
+  Left = 227
+  Top = 108
+  BorderStyle = bsDialog
+  Caption = 'Nastaven'#237
+  ClientHeight = 194
+  ClientWidth = 384
+  Color = clBtnFace
+  ParentFont = True
+  OldCreateOrder = True
+  Position = poScreenCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel1: TPanel
+    AlignWithMargins = True
+    Left = 8
+    Top = 161
+    Width = 368
+    Height = 25
+    Margins.Left = 8
+    Margins.Top = 0
+    Margins.Right = 8
+    Margins.Bottom = 8
+    Align = alBottom
+    BevelOuter = bvNone
+    Caption = 'Panel1'
+    ShowCaption = False
+    TabOrder = 0
+    ExplicitLeft = 3
+    ExplicitTop = 135
+    ExplicitWidth = 378
+    object OKBtn: TButton
+      Left = 218
+      Top = 0
+      Width = 75
+      Height = 25
+      Align = alRight
+      Caption = 'OK'
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
+      ExplicitLeft = 110
+      ExplicitTop = 8
+    end
+    object CancelBtn: TButton
+      Left = 293
+      Top = 0
+      Width = 75
+      Height = 25
+      Align = alRight
+      Cancel = True
+      Caption = 'Zru'#353'it'
+      ModalResult = 2
+      TabOrder = 1
+      ExplicitLeft = 299
+      ExplicitTop = 3
+    end
+  end
+  object GroupBox2: TGroupBox
+    AlignWithMargins = True
+    Left = 8
+    Top = 60
+    Width = 368
+    Height = 93
+    Margins.Left = 8
+    Margins.Top = 0
+    Margins.Right = 8
+    Margins.Bottom = 8
+    Align = alClient
+    Caption = 'Centr'#225'ln'#237' p'#345'ihla'#353'ovac'#237' '#250'daje'
+    TabOrder = 1
+    ExplicitLeft = -133
+    ExplicitTop = 81
+    ExplicitWidth = 517
+    ExplicitHeight = 97
+    object Panel4: TPanel
+      AlignWithMargins = True
+      Left = 5
+      Top = 41
+      Width = 358
+      Height = 23
+      Margins.Top = 0
+      Align = alTop
+      BevelOuter = bvNone
+      Caption = 'Panel3'
+      TabOrder = 1
+      ExplicitWidth = 507
+      object Label2: TLabel
+        Left = 0
+        Top = 0
+        Width = 110
+        Height = 23
+        Align = alLeft
+        AutoSize = False
+        Caption = 'Heslo'
+        Layout = tlCenter
+      end
+      object Heslo: TEdit
+        Left = 110
+        Top = 0
+        Width = 248
+        Height = 23
+        Align = alClient
+        TabOrder = 0
+        Text = 'Heslo'
+        ExplicitWidth = 397
+        ExplicitHeight = 21
+      end
+    end
+    object Panel7: TPanel
+      AlignWithMargins = True
+      Left = 5
+      Top = 67
+      Width = 358
+      Height = 23
+      Margins.Top = 0
+      Align = alTop
+      BevelOuter = bvNone
+      Caption = 'Panel3'
+      TabOrder = 2
+      ExplicitWidth = 507
+      object Label5: TLabel
+        Left = 0
+        Top = 0
+        Width = 110
+        Height = 23
+        Align = alLeft
+        AutoSize = False
+        Caption = 'Ozna'#269'en'#237' role'
+        Layout = tlCenter
+      end
+      object Role: TEdit
+        Left = 110
+        Top = 0
+        Width = 248
+        Height = 23
+        Align = alClient
+        TabOrder = 0
+        Text = 'Role'
+        ExplicitWidth = 397
+        ExplicitHeight = 21
+      end
+    end
+    object Panel8: TPanel
+      AlignWithMargins = True
+      Left = 5
+      Top = 15
+      Width = 358
+      Height = 23
+      Margins.Top = 0
+      Align = alTop
+      BevelOuter = bvNone
+      Caption = 'Panel3'
+      TabOrder = 0
+      ExplicitTop = 0
+      object Label6: TLabel
+        Left = 0
+        Top = 0
+        Width = 110
+        Height = 23
+        Align = alLeft
+        AutoSize = False
+        Caption = 'U'#382'ivatelsk'#233' jm'#233'no'
+        Layout = tlCenter
+      end
+      object Login: TEdit
+        Left = 110
+        Top = 0
+        Width = 248
+        Height = 23
+        Align = alClient
+        TabOrder = 0
+        Text = 'Login'
+        ExplicitWidth = 397
+        ExplicitHeight = 21
+      end
+    end
+  end
+  object GroupBox1: TGroupBox
+    AlignWithMargins = True
+    Left = 8
+    Top = 8
+    Width = 368
+    Height = 44
+    Margins.Left = 8
+    Margins.Top = 8
+    Margins.Right = 8
+    Margins.Bottom = 8
+    Align = alTop
+    Caption = 'Z'#225'lohov'#225'n'#237
+    TabOrder = 2
+    object Panel2: TPanel
+      AlignWithMargins = True
+      Left = 5
+      Top = 15
+      Width = 358
+      Height = 23
+      Margins.Top = 0
+      Align = alTop
+      BevelOuter = bvNone
+      Caption = 'Panel3'
+      TabOrder = 0
+      ExplicitLeft = 10
+      ExplicitTop = 23
+      ExplicitWidth = 374
+      object Label1: TLabel
+        Left = 0
+        Top = 0
+        Width = 110
+        Height = 23
+        Align = alLeft
+        AutoSize = False
+        Caption = 'Cesta ke GBAK'
+        Layout = tlCenter
+      end
+      object CestaGBAK: TEdit
+        Left = 110
+        Top = 0
+        Width = 248
+        Height = 23
+        Align = alClient
+        TabOrder = 0
+        Text = 'CestaGBAK'
+        ExplicitWidth = 264
+        ExplicitHeight = 21
+      end
+    end
+  end
+end

@@ -12,6 +12,7 @@ interface
       Text: string;
       Oznacen: Boolean;
       Poradi: Integer;
+      Autocommit: Boolean;
       Neprovadet: TList<TGUIDstring>;
 
       constructor Create;
@@ -69,6 +70,7 @@ implementation
     Nazev:=p_zdroj.Attr('nazev');
     Poradi:=StrToIntDef(p_zdroj.Attr('poradi'),-1);
     Oznacen:=StrToBoolDef(p_zdroj.Attr('oznacen'),True);
+    Autocommit:=StrToBoolDef(p_zdroj.Attr('autocommit'),True);
 
     if p_zdroj.HasXPath('/Executor/Skripty/Skript['+IntToStr(p_poradi)+']/Vyjimky') then NactiVyjimkyXML(p_zdroj,p_poradi);
 
@@ -91,6 +93,7 @@ implementation
     p_cil.WriteAttribute('nazev','',Nazev);
     p_cil.WriteAttribute('oznacen','',BoolToStr(Oznacen,True));
     p_cil.WriteAttribute('poradi','',IntToStr(p_poradi));
+    p_cil.WriteAttribute('autocommit','',BoolToStr(Autocommit,True));
     p_cil.StartElement('Text','');
     p_cil.WriteString(Text);
     p_cil.EndElement;
@@ -103,6 +106,7 @@ implementation
       p_cil.EndElement;
     end;
 
+    p_cil.EndElement;
     p_cil.EndElement;
   end;
 

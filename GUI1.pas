@@ -10,7 +10,7 @@ uses
   FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait, FireDAC.Phys.IBBase, DBUdaje,
   FireDAC.Comp.Client, Data.DB, FireDAC.Comp.ScriptCommands, FireDAC.Stan.Util,
   Vcl.StdCtrls, FireDAC.Comp.Script, Vcl.Menus, Vcl.ComCtrls, Vcl.ExtCtrls,
-  Generics.Collections, RzTreeVw;
+  Generics.Collections, RzTreeVw, GUIDObjekt;
 
 type
   TForm1 = class(TForm)
@@ -30,7 +30,7 @@ type
     Skripty1: TMenuItem;
     N2: TMenuItem;
     Pidatdatabzi1: TMenuItem;
-    Button5: TButton;
+    DatabazeSmazat: TButton;
     SkriptDolu: TButton;
     SkriptNahoru: TButton;
     SkriptSmazat: TButton;
@@ -39,10 +39,15 @@ type
     SkriptUpravit: TButton;
     Splitter1: TSplitter;
     DatabazeNahoru: TButton;
-    DattabazeDolu: TButton;
+    DatabazeDolu: TButton;
     Databaze: TRzCheckTree;
     Sprvasloek1: TMenuItem;
     DatabazeKopirovat: TButton;
+    SkriptZkopirovat: TButton;
+    Ostatn1: TMenuItem;
+    Monosti1: TMenuItem;
+    N3: TMenuItem;
+    Oprogramu1: TMenuItem;
     procedure Konec1Click(Sender: TObject);
     procedure SkriptPridatClick(Sender: TObject);
     procedure Nastnastaven1Click(Sender: TObject);
@@ -64,8 +69,19 @@ type
     procedure DatabazeKopirovatClick(Sender: TObject);
     procedure DatabazeStateChange(Sender: TObject; Node: TTreeNode;
       NewState: TRzCheckState);
+    procedure DatabazeNahoruClick(Sender: TObject);
+    procedure DatabazeDoluClick(Sender: TObject);
+    procedure DatabazeChange(Sender: TObject; Node: TTreeNode);
+    procedure DatabazeSmazatClick(Sender: TObject);
+    procedure Monosti1Click(Sender: TObject);
   private
     { Private declarations }
+    t_zakaz_zmeny_db: Boolean;
+    t_zakaz_zmeny_skriptov: Boolean;
+
+    t_vybrana_databaze: TGUIDstring;
+    t_vybrany_skript: TGUIDstring;
+
     procedure NaplnDatabaze;
     procedure NaplnSkripty;
   public
@@ -80,7 +96,7 @@ implementation
 {$R *.dfm}
 
 uses SkriptEditDialog, Skript, Nastaveni, DBEditDialog, UpdateDialog,
-  SlozkyDialog;
+  SlozkyDialog, Slozka, SlozkaDialog, System.UITypes, NastaveniDialog;
 
 procedure TForm1.SkriptPridatClick(Sender: TObject);
 begin
@@ -91,15 +107,8 @@ begin
   if SkriptEditDlg.ShowModal=mrOk then
   begin
     var v_skript:=TSkript.Create;
-    v_skript.GUID:=SkriptEditDlg.GUID;
-    v_skript.Poradi:=-1;
-    v_skript.Nazev:=SkriptEditDlg.Nazev.Text;
-    v_skript.Text:=SkriptEditDlg.Memo1.Text;
-
-    SkriptEditDlg.NaplnVyjimky(v_skript.Neprovadet);
-
+    SkriptEditDlg.Vystup(v_skript);
     ExecutorNastaveni.UlozSkript(v_skript);
-
     NaplnSkripty;
   end;
 end;
@@ -172,16 +181,11 @@ begin
     begin
       SkriptEditDlg.Vycisti;
       SkriptEditDlg.NastavDatabaze(ExecutorNastaveni.Databaze);
-      SkriptEditDlg.Napln(v_skript);
+      SkriptEditDlg.Vstup(v_skript);
 
       if SkriptEditDlg.ShowModal=mrOk then
       begin
-        v_skript.Nazev:=SkriptEditDlg.Nazev.Text;
-        v_skript.Text:=SkriptEditDlg.Memo1.Text;
-        v_skript.Neprovadet.Clear;
-
-        SkriptEditDlg.NaplnVyjimky(v_skript.Neprovadet);
-
+        SkriptEditDlg.Vystup(v_skript);
         ExecutorNastaveni.UlozSkript(v_skript);
         NaplnSkripty;
       end;
@@ -198,31 +202,147 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TForm1.DatabazuUpravitClick(Sender: TObject);
+procedure TForm1.DatabazuPridatClick(Sender: TObject);
 var
-  dbguid: string;
   v_databaze: TDBUdaje;
 begin
-  if (Databaze.Selected.Index>=0) and (Databaze.Selected.Data<>nil) and (TObject(Databaze.Selected.Data) is TDBUdaje) then
+  DBEditDlg.Priprav;
+  DBEditDlg.GUID:=ExecutorNastaveni.VytvorGUID;
+  DBEditDlg.HesloSkryt.Checked:=False;
+
+  if (Databaze.Selected<>nil) and (Databaze.Selected.Data<>nil) then
   begin
-    v_databaze:=TDBUdaje(Databaze.Selected.Data);
-    DBEditDlg.Vycisti;
-    DBEditDlg.NaplnSlozky;
-    DBEditDlg.Napln(v_databaze);
-
-    if DBEditDlg.ShowModal=mrOk then
+    if TObject(Databaze.Selected.Data) is TSlozka then DBEditDlg.Slozka.ItemIndex:=DBEditDlg.Slozka.Items.IndexOfObject(TObject(Databaze.Selected.Data))
+    else if TObject(Databaze.Selected.Data) is TDBUdaje then
     begin
-      v_databaze.GUID:=DBEditDlg.GUID;
-      v_databaze.Slozka:=DBEditDlg.VybranaSlozka;
-      v_databaze.Nazev:=DBEditDlg.Nazev.Text;
-      v_databaze.Cesta:=DBEditDlg.Cesta.Text;
-      v_databaze.Server:=DBEditDlg.Server.Text;
-      v_databaze.Login:=DBEditDlg.Login.Text;
-      v_databaze.Heslo:=DBEditDlg.Heslo.Text;
-      v_databaze.Rola:=DBEditDlg.Role.Text;
+      var v_slozka:=ExecutorNastaveni.Slozky[TDBUdaje(Databaze.Selected.Data).Slozka];
+      DBEditDlg.Slozka.ItemIndex:=DBEditDlg.Slozka.Items.IndexOfObject(v_slozka);
+    end;
+  end;
 
-      ExecutorNastaveni.UlozDatabazi(v_databaze);
+  if DBEditDlg.ShowModal=mrOk then
+  begin
+    v_databaze:=TDBUdaje.Create;
+    DBEditDlg.Vystup(v_databaze);
+    NaplnDatabaze;
+  end;
+end;
 
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TForm1.DatabazuUpravitClick(Sender: TObject);
+begin
+  if (Databaze.Selected.Index>=0) and (Databaze.Selected.Data<>nil) then
+  begin
+    if TObject(Databaze.Selected.Data) is TDBUdaje then
+    begin
+      var v_databaze:=TDBUdaje(Databaze.Selected.Data);
+      DBEditDlg.Priprav;
+      DBEditDlg.Vstup(v_databaze);
+
+      if DBEditDlg.ShowModal=mrOk then
+      begin
+        DBEditDlg.Vystup(v_databaze);
+        NaplnDatabaze;
+      end;
+    end
+    else if TObject(Databaze.Selected.Data) is TSlozka then
+    begin
+      var v_slozka:=TSlozka(Databaze.Selected.Data);
+      SlozkaDlg.Priprav;
+      SlozkaDlg.Vstup(v_slozka);
+
+      if SlozkaDlg.ShowModal=mrOk then
+      begin
+        SlozkaDlg.Vystup(v_slozka);
+        NaplnDatabaze;
+      end;
+    end;
+  end;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TForm1.DatabazeKopirovatClick(Sender: TObject);
+begin
+  if (Databaze.Selected.Index>=0) and (Databaze.Selected.Data<>nil) then
+  begin
+    if TObject(Databaze.Selected.Data) is TDBUdaje then
+    begin
+      var v_databaze:=TDBUdaje(Databaze.Selected.Data);
+
+      DBEditDlg.Priprav;
+      DBEditDlg.Vstup(v_databaze);
+      DBEditDlg.GUID:=ExecutorNastaveni.VytvorGUID;
+
+      if DBEditDlg.ShowModal=mrOk then
+      begin
+        v_databaze:=TDBUdaje.Create;
+        DBEditDlg.Vystup(v_databaze);
+        NaplnDatabaze;
+      end;
+    end
+    else if TObject(Databaze.Selected.Data) is TSlozka then
+    begin
+      var v_slozka:=TSlozka(Databaze.Selected.Data);
+
+      SlozkaDlg.Priprav;
+      SlozkaDlg.Vstup(v_slozka);
+      SlozkaDlg.GUID:=ExecutorNastaveni.VytvorGUID;
+
+      if SlozkaDlg.ShowModal=mrOk then
+      begin
+        v_slozka:=TSlozka.Create;
+        SlozkaDlg.Vystup(v_slozka);
+        NaplnDatabaze;
+      end;
+    end;
+  end;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TForm1.DatabazeSmazatClick(Sender: TObject);
+begin
+  if (Databaze.Selected.Index>=0) and (Databaze.Selected.Data<>nil) then
+  begin
+    if TObject(Databaze.Selected.Data) is TDBUdaje then
+    begin
+      var v_databaze:=TDBUdaje(Databaze.Selected.Data);
+
+      if MessageDlg('Opravdu smazat databázi '+v_databaze.Nazev+'?',mtConfirmation,mbYesNo,0)=mryes then
+      begin
+        ExecutorNastaveni.SmazDatabazi(v_databaze);
+        NaplnDatabaze;
+      end;
+    end
+    else if TObject(Databaze.Selected.Data) is TSlozka then
+    begin
+      var v_slozka:=TSlozka(Databaze.Selected.Data);
+
+      if MessageDlg('Opravdu smazat složku '+v_slozka.Nazev+'? Bude smazána vèetnì databází v ní uložených',mtConfirmation,mbYesNo,0)=mrYes then
+      begin
+        ExecutorNastaveni.SmazSlozku(v_slozka);
+        NaplnDatabaze;
+      end;
+    end;
+  end;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TForm1.DatabazeNahoruClick(Sender: TObject);
+begin
+  if (Databaze.Selected<>nil) and (Databaze.Selected.Data<>nil) then
+  begin
+    if TObject(Databaze.Selected.Data) is TDBUdaje then
+    begin
+      ExecutorNastaveni.PosunDatabaziNahoru(TDBUdaje(Databaze.Selected.Data));
+      NaplnDatabaze;
+    end
+    else if TObject(Databaze.Selected.Data) is TSlozka then
+    begin
+      ExecutorNastaveni.PosunSlozkuNahoru(TSlozka(Databaze.Selected.Data));
       NaplnDatabaze;
     end;
   end;
@@ -230,30 +350,66 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TForm1.DatabazuPridatClick(Sender: TObject);
-var
-  v_databaze: TDBUdaje;
+procedure TForm1.DatabazeDoluClick(Sender: TObject);
 begin
-  DBEditDlg.Vycisti;
-  DBEditDlg.NaplnSlozky;
-  DBEditDlg.GUID:=ExecutorNastaveni.VytvorGUID;
-  DBEditDlg.HesloSkryt.Checked:=False;
-
-  if DBEditDlg.ShowModal=mrOk then
+  if (Databaze.Selected<>nil) and (Databaze.Selected.Data<>nil) then
   begin
-    v_databaze:=TDBUdaje.Create;
-    v_databaze.Slozka:=DBEditDlg.VybranaSlozka;
-    v_databaze.GUID:=DBEditDlg.GUID;
-    v_databaze.Nazev:=DBEditDlg.Nazev.Text;
-    v_databaze.Cesta:=DBEditDlg.Cesta.Text;
-    v_databaze.Server:=DBEditDlg.Server.Text;
-    v_databaze.Login:=DBEditDlg.Login.Text;
-    v_databaze.Heslo:=DBEditDlg.Heslo.Text;
-    v_databaze.Rola:=DBEditDlg.Role.Text;
+    if TObject(Databaze.Selected.Data) is TDBUdaje then
+    begin
+      ExecutorNastaveni.PosunDatabaziDolu(TDBUdaje(Databaze.Selected.Data));
+      NaplnDatabaze;
+    end
+    else if TObject(Databaze.Selected.Data) is TSlozka then
+    begin
+      ExecutorNastaveni.PosunSlozkuDolu(TSlozka(Databaze.Selected.Data));
+      NaplnDatabaze;
+    end;
+  end;
+end;
 
-    ExecutorNastaveni.UlozDatabazi(v_databaze);
+////////////////////////////////////////////////////////////////////////////////
 
-    NaplnDatabaze;
+procedure TForm1.DatabazeChange(Sender: TObject; Node: TTreeNode);
+begin
+  if not t_zakaz_zmeny_db then
+  begin
+    if (Databaze.Selected<>nil) and (Databaze.Selected.Data<>nil) then
+    begin
+      if Databaze.Selected=Node then t_vybrana_databaze:=TGUIDObjekt(Databaze.Selected.Data).GUID;
+
+      if TObject(Databaze.Selected.Data) is TDBUdaje then
+      begin
+        DatabazuUpravit.Enabled:=True;
+        DatabazeKopirovat.Enabled:=True;
+        DatabazeSmazat.Enabled:=True;
+        DatabazeNahoru.Enabled:=Node<>Node.Parent.getFirstChild;
+        DatabazeDolu.Enabled:=Node<>Node.Parent.GetLastChild;
+      end
+      else if TObject(Databaze.Selected.Data) is TSlozka then
+      begin
+        DatabazuUpravit.Enabled:=True;
+        DatabazeKopirovat.Enabled:=True;
+        DatabazeSmazat.Enabled:=True;
+        DatabazeNahoru.Enabled:=not Node.IsFirstNode;
+        DatabazeDolu.Enabled:=True;
+      end
+      else
+      begin
+        DatabazuUpravit.Enabled:=False;
+        DatabazeKopirovat.Enabled:=False;
+        DatabazeSmazat.Enabled:=False;
+        DatabazeNahoru.Enabled:=False;
+        DatabazeDolu.Enabled:=False;
+      end;
+    end
+    else
+    begin
+      DatabazuUpravit.Enabled:=False;
+      DatabazeKopirovat.Enabled:=False;
+      DatabazeSmazat.Enabled:=False;
+      DatabazeNahoru.Enabled:=False;
+      DatabazeDolu.Enabled:=False;
+    end;
   end;
 end;
 
@@ -262,39 +418,6 @@ end;
 procedure TForm1.DatabazeDblClick(Sender: TObject);
 begin
   DatabazuUpravitClick(DatabazuUpravit);
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-
-procedure TForm1.DatabazeKopirovatClick(Sender: TObject);
-var
-  dbguid: string;
-  v_databaze: TDBUdaje;
-begin
-  if (Databaze.Selected.Index>=0) and (Databaze.Selected.Data<>nil) and (TObject(Databaze.Selected.Data) is TDBUdaje) then
-  begin
-    v_databaze:=TDBUdaje(Databaze.Selected.Data);
-
-    DBEditDlg.Vycisti;
-    DBEditDlg.Napln(v_databaze);
-    DBEditDlg.GUID:=ExecutorNastaveni.VytvorGUID;
-
-    if DBEditDlg.ShowModal=mrOk then
-    begin
-      v_databaze:=TDBUdaje.Create;
-      v_databaze.GUID:=DBEditDlg.GUID;
-      v_databaze.Nazev:=DBEditDlg.Nazev.Text;
-      v_databaze.Cesta:=DBEditDlg.Cesta.Text;
-      v_databaze.Server:=DBEditDlg.Server.Text;
-      v_databaze.Login:=DBEditDlg.Login.Text;
-      v_databaze.Heslo:=DBEditDlg.Heslo.Text;
-      v_databaze.Rola:=DBEditDlg.Role.Text;
-
-      ExecutorNastaveni.UlozDatabazi(v_databaze);
-
-      NaplnDatabaze;
-    end;
-  end;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -324,7 +447,11 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  t_zakaz_zmeny_db:=False;
+  t_zakaz_zmeny_skriptov:=False;
 
+  t_vybrana_databaze:='';
+  t_vybrany_skript:='';
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -338,7 +465,13 @@ end;
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
-  Nastnastaven1Click(Nastnastaven1);
+  if ParamCount>0 then
+  begin
+    ExecutorNastaveni.NactiNastaveniXML(ParamStr(1));
+    NaplnDatabaze;
+    NaplnSkripty;
+  end
+  else Nastnastaven1Click(Nastnastaven1);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -346,6 +479,20 @@ end;
 procedure TForm1.Konec1Click(Sender: TObject);
 begin
   Close;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TForm1.Monosti1Click(Sender: TObject);
+begin
+  NastaveniDlg.Priprav;
+
+  if NastaveniDlg.ShowModal=mrOk then
+  begin
+    NastaveniDlg.Vystup;
+    NaplnDatabaze;
+    NaplnSkripty;
+  end;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -400,26 +547,48 @@ procedure TForm1.NaplnDatabaze;
 var
   slozkaItem,databazeItem: TTreeNode;
 begin
-  Databaze.Items.Clear;
-  slozkaItem:=nil;
+  t_zakaz_zmeny_db:=True;
+  try
+    Databaze.Items.BeginUpdate;
+    try
+      Databaze.Items.Clear;
+      slozkaItem:=nil;
 
-  for var v_slozkaguid in ExecutorNastaveni.SlozkyPoradi do
-  begin
-    var v_slozka:=ExecutorNastaveni.Slozky[v_slozkaguid];
-    slozkaItem:=Databaze.Items.Add(slozkaItem,v_slozka.Nazev);
-    slozkaItem.Data:=v_slozka;
-
-    for var v_databazeguid in ExecutorNastaveni.DatabazePoradi do
-    begin
-      var v_databaze:=ExecutorNastaveni.Databaze[v_databazeguid];
-      if(v_databaze.Slozka=v_slozka.GUID) then
+      for var v_slozkaguid in ExecutorNastaveni.SlozkyPoradi do
       begin
-        databazeItem:=Databaze.Items.AddChild(slozkaItem,v_databaze.Nazev);
-        databazeItem.Data:=v_databaze;
+        var v_slozka:=ExecutorNastaveni.Slozky[v_slozkaguid];
+        slozkaItem:=Databaze.Items.Add(slozkaItem,v_slozka.Nazev);
+        slozkaItem.Data:=v_slozka;
 
-        if v_databaze.Oznacena then Databaze.ItemState[databazeItem.Index]:=csChecked
-        else Databaze.ItemState[databazeItem.Index]:=csUnchecked;
+        for var v_databazeguid in ExecutorNastaveni.DatabazePoradi do
+        begin
+          var v_databaze:=ExecutorNastaveni.Databaze[v_databazeguid];
+          if(v_databaze.Slozka=v_slozka.GUID) then
+          begin
+            databazeItem:=Databaze.Items.AddChild(slozkaItem,v_databaze.Nazev);
+            databazeItem.Data:=v_databaze;
+
+            if v_databaze.Oznacena then Databaze.ItemState[databazeItem.AbsoluteIndex]:=csChecked
+            else Databaze.ItemState[databazeItem.AbsoluteIndex]:=csUnchecked;
+          end;
+        end;
+
+        slozkaItem.Expand(True);
       end;
+    finally
+      Databaze.Items.EndUpdate;
+    end;
+  finally
+    t_zakaz_zmeny_db:=False;
+  end;
+
+  DatabazeChange(Databaze,nil);
+
+  for var i:= 0 to Databaze.Items.Count-1 do
+  begin
+    if (Databaze.Items[i].Data<>nil) then if TGUIDObjekt(Databaze.Items[i].Data).GUID=t_vybrana_databaze then
+    begin
+      Databaze.Selected:=Databaze.Items[i];
     end;
   end;
 end;

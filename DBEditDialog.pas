@@ -50,14 +50,16 @@ type
     { Private declarations }
     t_guid: string;
     t_vybrana_slozka: string;
+
+    procedure NaplnSlozky;
   public
     { Public declarations }
     property GUID: string read t_guid write t_guid;
     property VybranaSlozka: string read t_vybrana_slozka write t_vybrana_slozka;
 
-    procedure Vycisti;
-    procedure NaplnSlozky;
-    procedure Napln(p_databaze: TDBUdaje);
+    procedure Priprav;
+    procedure Vstup(p_databaze: TDBUdaje);
+    procedure Vystup(p_databaze: TDBUdaje);
   end;
 
 var
@@ -164,11 +166,12 @@ end;
 procedure TDBEditDlg.NaplnSlozky;
 var
   v_slozka: TSlozka;
-  v_selected: TGUIDstring;
 begin
   Slozka.Items.BeginUpdate;
 
   try
+    Slozka.Clear;
+
     for var v_slozkaguid in ExecutorNastaveni.SlozkyPoradi do
     begin
       if ExecutorNastaveni.Slozky.TryGetValue(v_slozkaguid,v_slozka) then Slozka.AddItem(v_slozka.Nazev,v_slozka);
@@ -192,17 +195,18 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TDBEditDlg.Vycisti;
+procedure TDBEditDlg.Priprav;
 begin
   GUID:='';
+  Slozka.Clear;
   VybranaSlozka:='';
-  Slozka.ItemIndex:=-1;
 
   Nazev.Text:='';
   Server.Text:='';
   Cesta.Text:='';
 
   LoginCentral.Checked:=True;
+  DBEditDlg.NaplnSlozky;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -245,7 +249,7 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TDBEditDlg.Napln(p_databaze: TDBUdaje);
+procedure TDBEditDlg.Vstup(p_databaze: TDBUdaje);
 begin
   GUID:=p_databaze.GUID;
 
@@ -267,5 +271,22 @@ begin
     Role.Text:=p_databaze.Rola;
   end;
 end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TDBEditDlg.Vystup(p_databaze: TDBUdaje);
+begin
+  p_databaze.GUID:=GUID;
+  p_databaze.Slozka:=VybranaSlozka;
+  p_databaze.Nazev:=Nazev.Text;
+  p_databaze.Cesta:=Cesta.Text;
+  p_databaze.Server:=Server.Text;
+  p_databaze.Login:=Login.Text;
+  p_databaze.Heslo:=Heslo.Text;
+  p_databaze.Rola:=Role.Text;
+
+  ExecutorNastaveni.UlozDatabazi(p_databaze);
+end;
+
 
 end.

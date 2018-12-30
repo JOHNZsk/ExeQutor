@@ -9,6 +9,9 @@ interface
     public
       Nazev: string;
       Poradi: Integer;
+      Login: string;
+      Heslo: string;
+      Role: string;
 
       procedure NactiXML(p_zdroj: TipwXMLp; p_poradi: Integer; p_databaze_udaje: TObjectDictionary<TGUIDstring,TDBUdaje>);
       procedure UlozXML(p_cil: TipwXMLw; p_poradi: Integer; p_databaze_poradi: TList<TGUIDstring>; p_databaze_udaje: TObjectDictionary<TGUIDstring,TDBUdaje>);
@@ -31,6 +34,9 @@ implementation
     GUID:=p_zdroj.Attr('GUID');
     Nazev:=p_zdroj.Attr('nazev');
     Poradi:=StrToIntDef(p_zdroj.Attr('poradi'),-1);
+    Login:=p_zdroj.Attr('login');
+    Heslo:=p_zdroj.Attr('heslo');
+    Role:=p_zdroj.Attr('role');
 
     if p_zdroj.HasXPath('/Executor/SlozkyDatabaze/Slozka['+IntToStr(p_poradi)+']/SlozkaDatabaze') then
     begin
@@ -80,6 +86,9 @@ implementation
     p_cil.WriteAttribute('GUID','',GUID);
     p_cil.WriteAttribute('nazev','',Nazev);
     p_cil.WriteAttribute('poradi','',IntToStr(p_poradi));
+    p_cil.WriteAttribute('login','',Login);
+    p_cil.WriteAttribute('heslo','',Heslo);
+    p_cil.WriteAttribute('role','',Role);
 
     UlozDatabazeXML(p_cil,p_databaze_poradi,p_databaze_udaje);
 

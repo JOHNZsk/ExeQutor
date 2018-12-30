@@ -4,12 +4,13 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.IniFiles, DBUdaje, Generics.Collections,
-  Skript, GUIDObjekt, ipwxmlw, ipwcore, ipwxmlp, Slozka;
+  Skript, GUIDObjekt, ipwxmlw, ipwcore, ipwxmlp, Slozka, Vcl.Dialogs;
 
 type
   TExecutorNastaveni = class(TDataModule)
     xmlparse: TipwXMLp;
     xmlread: TipwXMLw;
+    FileSaveDialog1: TFileSaveDialog;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   private
@@ -41,11 +42,11 @@ type
 
   public
     { Public declarations }
-    property CentralLogin: string read t_central_login;
-    property CentralHeslo: string read t_central_heslo;
-    property CentralRole: string read t_central_role;
+    property CentralLogin: string read t_central_login write t_central_login;
+    property CentralHeslo: string read t_central_heslo write t_central_heslo;
+    property CentralRole: string read t_central_role write t_central_role;
 
-    property ZalohaCesta: string read t_zaloha_cesta;
+    property ZalohaCesta: string read t_zaloha_cesta write t_zaloha_cesta;
 
     property Slozky: TObjectDictionary<string,TSlozka> read t_slozky;
     property SlozkyPoradi: TList<string> read t_slozky_poradi;
@@ -79,7 +80,6 @@ var
   ExecutorNastaveni: TExecutorNastaveni;
 
 implementation
-  uses Dialogs;
 
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
@@ -88,7 +88,7 @@ implementation
 procedure TExecutorNastaveni.DataModuleCreate(Sender: TObject);
 begin
   t_soubor_nazev:='';
-  t_neukladat:=True;
+  t_neukladat:=False;
   t_chyba_config:=True;
 
   t_central_login:='';
@@ -285,26 +285,32 @@ procedure TExecutorNastaveni.UlozNastaveniXML;
 begin
   if not t_neukladat then
   begin
-    xmlread.Config('Charset=windows-1250');
-    xmlread.OutputFile:=t_soubor_nazev;
-    xmlread.WriteXMLDeclaration('1.0',True,False);
-    xmlread.StartElement('Executor','');
-    xmlread.StartElement('Nastaveni','');
-    xmlread.StartElement('Databaze','');
-    xmlread.WriteAttribute('login','',t_central_login);
-    xmlread.WriteAttribute('heslo','',t_central_login);
-    xmlread.WriteAttribute('role','',t_central_role);
-    xmlread.EndElement;
+    if (t_soubor_nazev<>'') or FileSaveDialog1.Execute  then
+    begin
+      if t_soubor_nazev='' then t_soubor_nazev:=FileSaveDialog1.FileName;
+      
 
-    xmlread.StartElement('Zaloha','');
-    xmlread.WriteAttribute('cestaGBAK','',t_zaloha_cesta);
-    xmlread.EndElement;
-    xmlread.EndElement;
+      xmlread.Config('Charset=windows-1250');
+      xmlread.OutputFile:=t_soubor_nazev;
+      xmlread.WriteXMLDeclaration('1.0',True,False);
+      xmlread.StartElement('Executor','');
+      xmlread.StartElement('Nastaveni','');
+      xmlread.StartElement('Databaze','');
+      xmlread.WriteAttribute('login','',t_central_login);
+      xmlread.WriteAttribute('heslo','',t_central_heslo);
+      xmlread.WriteAttribute('role','',t_central_role);
+      xmlread.EndElement;
 
-    UlozDatabazeSlozkyXML;
-    UlozSkriptyXML;
+      xmlread.StartElement('Zaloha','');
+      xmlread.WriteAttribute('cestaGBAK','',t_zaloha_cesta);
+      xmlread.EndElement;
+      xmlread.EndElement;
 
-    xmlread.Close;
+      UlozDatabazeSlozkyXML;
+      UlozSkriptyXML;
+
+      xmlread.Close;
+    end;
   end;
 end;
 

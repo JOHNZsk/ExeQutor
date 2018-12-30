@@ -14,4 +14,16 @@ object ExecutorNastaveni: TExecutorNastaveni
     Left = 104
     Top = 16
   end
+  object FileSaveDialog1: TFileSaveDialog
+    DefaultExtension = 'eqr'
+    FavoriteLinks = <>
+    FileTypes = <
+      item
+        DisplayName = 'Profil ExeQutor XML'
+        FileMask = '*.eqr'
+      end>
+    Options = [fdoOverWritePrompt]
+    Left = 80
+    Top = 80
+  end
 end

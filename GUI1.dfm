@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Hromadn'#225' '#250'prava datab'#225'ze'
+  Caption = 'ExeQutor'
   ClientHeight = 711
   ClientWidth = 835
   Color = clBtnFace
@@ -52,71 +52,71 @@ object Form1: TForm1
       Caption = 'Panel1'
       ShowCaption = False
       TabOrder = 0
-      object Button5: TButton
+      object DatabazeSmazat: TButton
         Left = 614
         Top = 0
         Width = 65
         Height = 25
+        Hint = 'Sma'#382'e vybranou datab'#225'zi nebo slo'#382'ku'
         Align = alRight
         Caption = 'Smazat'
         TabOrder = 0
-        ExplicitLeft = 629
+        OnClick = DatabazeSmazatClick
       end
       object DatabazuPridat: TButton
         Left = 419
         Top = 0
         Width = 65
         Height = 25
+        Hint = 'Vytvo'#345#237' novou datab'#225'zi'
         Align = alRight
         Caption = 'P'#345'idat'
         TabOrder = 1
         OnClick = DatabazuPridatClick
-        ExplicitLeft = 449
       end
       object DatabazuUpravit: TButton
         Left = 549
         Top = 0
         Width = 65
         Height = 25
+        Hint = 'Uprav'#237' '#250'daje o vybran'#233' datab'#225'ze nebo slo'#382'cce'
         Align = alRight
         Caption = 'Upravit'
         TabOrder = 2
         OnClick = DatabazuUpravitClick
-        ExplicitLeft = 569
       end
       object DatabazeNahoru: TButton
         Left = 679
         Top = 0
         Width = 65
         Height = 25
+        Hint = 'Posune datab'#225'z'#237' nebo slo'#382'ku nahoru'
         Align = alRight
         Caption = 'Nahoru'
         TabOrder = 3
-        OnClick = DatabazuPridatClick
-        ExplicitLeft = 689
+        OnClick = DatabazeNahoruClick
       end
-      object DattabazeDolu: TButton
+      object DatabazeDolu: TButton
         Left = 744
         Top = 0
         Width = 65
         Height = 25
+        Hint = 'Posune datab'#225'zi nebo slo'#382'ku dol'#367
         Align = alRight
         Caption = 'Dol'#367
         TabOrder = 4
-        OnClick = DatabazuPridatClick
-        ExplicitLeft = 749
+        OnClick = DatabazeDoluClick
       end
       object DatabazeKopirovat: TButton
         Left = 484
         Top = 0
         Width = 65
         Height = 25
+        Hint = 'Vytvo'#345#237' novou datab'#225'zi dle ji'#382' ulo'#382'en'#233
         Align = alRight
         Caption = 'Zkop'#237'rovat'
         TabOrder = 5
         OnClick = DatabazeKopirovatClick
-        ExplicitLeft = 478
-        ExplicitTop = 1
       end
     end
     object Databaze: TRzCheckTree
@@ -127,11 +127,15 @@ object Form1: TForm1
       Height = 281
       OnStateChange = DatabazeStateChange
       Align = alClient
+      DoubleBuffered = True
+      HideSelection = False
       Indent = 19
+      ParentDoubleBuffered = False
       RowSelect = True
       SelectionPen.Color = clBtnShadow
       StateImages = Databaze.CheckImages
       TabOrder = 1
+      OnChange = DatabazeChange
       OnDblClick = DatabazeDblClick
       Items.NodeData = {
         030100000026000000000000000000000001000000FFFFFFFF00000000000000
@@ -192,54 +196,70 @@ object Form1: TForm1
       ShowCaption = False
       TabOrder = 1
       object SkriptPridat: TButton
-        Left = 330
+        Left = 419
         Top = 0
-        Width = 75
+        Width = 65
         Height = 25
+        Hint = 'Vytvo'#345#237' nov'#253' skript'
         Align = alRight
-        Caption = 'P'#345'idat skript'
+        Caption = 'P'#345'idat'
         TabOrder = 0
         OnClick = SkriptPridatClick
       end
       object SkriptDolu: TButton
-        Left = 709
+        Left = 744
         Top = 0
-        Width = 100
+        Width = 65
         Height = 25
+        Hint = 'Posune vybran'#253' skript dol'#367
         Align = alRight
-        Caption = 'Posunout dol'#367
+        Caption = 'Dol'#367
         TabOrder = 1
         OnClick = SkriptDoluClick
       end
       object SkriptNahoru: TButton
-        Left = 604
+        Left = 679
         Top = 0
-        Width = 105
+        Width = 65
         Height = 25
+        Hint = 'Posune vybran'#253' skript nahoru'
         Align = alRight
-        Caption = 'Posunout nahoru'
+        Caption = 'Nahoru'
         TabOrder = 2
         OnClick = SkriptNahoruClick
       end
       object SkriptSmazat: TButton
-        Left = 499
+        Left = 614
         Top = 0
-        Width = 105
+        Width = 65
         Height = 25
+        Hint = 'Sma'#382'e vybran'#253' skript'
         Align = alRight
-        Caption = 'Smazat skript'
+        Caption = 'Smazat'
         TabOrder = 3
         OnClick = SkriptSmazatClick
       end
       object SkriptUpravit: TButton
-        Left = 405
+        Left = 549
         Top = 0
-        Width = 94
+        Width = 65
         Height = 25
+        Hint = 'Uprav'#237' '#250'daje o vybran'#233'm skriptu'
         Align = alRight
-        Caption = 'Upravit skript'
+        Caption = 'Upravit'
         TabOrder = 4
         OnClick = SkriptUpravitClick
+      end
+      object SkriptZkopirovat: TButton
+        Left = 484
+        Top = 0
+        Width = 65
+        Height = 25
+        Hint = 'Vytvo'#345#237' nov'#253' skript'
+        Align = alRight
+        Caption = 'Zkop'#237'rovat'
+        TabOrder = 5
+        OnClick = SkriptPridatClick
       end
     end
   end
@@ -249,6 +269,7 @@ object Form1: TForm1
     Top = 678
     Width = 819
     Height = 25
+    Hint = 'Za'#269'ne prov'#225'd'#283't zm'#283'ny v datab'#225'z'#237'ch'
     Margins.Left = 8
     Margins.Top = 0
     Margins.Right = 8
@@ -289,9 +310,23 @@ object Form1: TForm1
         OnClick = Konec1Click
       end
     end
+    object Ostatn1: TMenuItem
+      Caption = 'Ostatn'#237
+      object Monosti1: TMenuItem
+        Caption = 'Mo'#382'nosti'
+        OnClick = Monosti1Click
+      end
+      object N3: TMenuItem
+        Caption = '-'
+      end
+      object Oprogramu1: TMenuItem
+        Caption = 'O programu'
+      end
+    end
   end
   object OpenDialog1: TOpenDialog
     DefaultExt = 'xml'
+    Filter = 'Profil ExeQutor XML (*.eqr)|*.eqr'
     Options = [ofCreatePrompt, ofEnableSizing]
     Left = 192
     Top = 152

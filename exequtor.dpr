@@ -12,7 +12,8 @@ uses
   Slozka in 'Slozka.pas',
   GUIDObjekt in 'GUIDObjekt.pas',
   SlozkyDialog in 'SlozkyDialog.pas' {SlozkyDlg},
-  SlozkaDialog in 'SlozkaDialog.pas' {SlozkaDlg};
+  SlozkaDialog in 'SlozkaDialog.pas' {SlozkaDlg},
+  NastaveniDialog in 'NastaveniDialog.pas' {NastaveniDlg};
 
 {$R *.res}
 
@@ -26,5 +27,6 @@ begin
   Application.CreateForm(TUpdateDlg, UpdateDlg);
   Application.CreateForm(TSlozkyDlg, SlozkyDlg);
   Application.CreateForm(TSlozkaDlg, SlozkaDlg);
+  Application.CreateForm(TNastaveniDlg, NastaveniDlg);
   Application.Run;
 end.

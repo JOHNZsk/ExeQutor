@@ -26,7 +26,7 @@ object DBEditDlg: TDBEditDlg
     BevelOuter = bvNone
     Caption = 'Panel1'
     ShowCaption = False
-    TabOrder = 0
+    TabOrder = 2
     object OKBtn: TButton
       Left = 389
       Top = 0
@@ -36,7 +36,7 @@ object DBEditDlg: TDBEditDlg
       Caption = 'OK'
       Default = True
       ModalResult = 1
-      TabOrder = 0
+      TabOrder = 1
       OnClick = OKBtnClick
     end
     object CancelBtn: TButton
@@ -48,7 +48,7 @@ object DBEditDlg: TDBEditDlg
       Cancel = True
       Caption = 'Zru'#353'it'
       ModalResult = 2
-      TabOrder = 1
+      TabOrder = 2
     end
     object HesloSkryt: TCheckBox
       AlignWithMargins = True
@@ -59,7 +59,7 @@ object DBEditDlg: TDBEditDlg
       Margins.Left = 0
       Align = alLeft
       Caption = 'Skr'#253't heslo'
-      TabOrder = 2
+      TabOrder = 0
       OnClick = HesloSkrytClick
     end
   end
@@ -75,7 +75,7 @@ object DBEditDlg: TDBEditDlg
     Margins.Bottom = 8
     Align = alTop
     Caption = #218'daje o datab'#225'ze'
-    TabOrder = 1
+    TabOrder = 0
     object Panel3: TPanel
       AlignWithMargins = True
       Left = 5
@@ -87,7 +87,7 @@ object DBEditDlg: TDBEditDlg
       BevelOuter = bvNone
       Caption = 'Panel3'
       ShowCaption = False
-      TabOrder = 0
+      TabOrder = 1
       object Label1: TLabel
         Left = 0
         Top = 0
@@ -121,7 +121,7 @@ object DBEditDlg: TDBEditDlg
       BevelOuter = bvNone
       Caption = 'Panel3'
       ShowCaption = False
-      TabOrder = 1
+      TabOrder = 2
       object Label3: TLabel
         Left = 0
         Top = 0
@@ -154,7 +154,7 @@ object DBEditDlg: TDBEditDlg
       BevelOuter = bvNone
       Caption = 'Panel3'
       ShowCaption = False
-      TabOrder = 2
+      TabOrder = 3
       object Label4: TLabel
         Left = 0
         Top = 0
@@ -187,7 +187,7 @@ object DBEditDlg: TDBEditDlg
       BevelOuter = bvNone
       Caption = 'Panel3'
       ShowCaption = False
-      TabOrder = 3
+      TabOrder = 4
       object Label7: TLabel
         Left = 0
         Top = 0
@@ -230,7 +230,7 @@ object DBEditDlg: TDBEditDlg
       BevelOuter = bvNone
       Caption = 'Panel3'
       ShowCaption = False
-      TabOrder = 4
+      TabOrder = 0
       object Label8: TLabel
         Left = 0
         Top = 0
@@ -281,7 +281,7 @@ object DBEditDlg: TDBEditDlg
     Margins.Bottom = 8
     Align = alClient
     Caption = 'P'#345'ihla'#353'ovac'#237' '#250'daje'
-    TabOrder = 2
+    TabOrder = 1
     object Panel4: TPanel
       AlignWithMargins = True
       Left = 5
@@ -292,7 +292,7 @@ object DBEditDlg: TDBEditDlg
       Align = alTop
       BevelOuter = bvNone
       Caption = 'Panel3'
-      TabOrder = 0
+      TabOrder = 1
       object Label2: TLabel
         Left = 0
         Top = 0
@@ -324,7 +324,7 @@ object DBEditDlg: TDBEditDlg
       Align = alTop
       BevelOuter = bvNone
       Caption = 'Panel3'
-      TabOrder = 1
+      TabOrder = 2
       object Label5: TLabel
         Left = 0
         Top = 0
@@ -356,7 +356,7 @@ object DBEditDlg: TDBEditDlg
       Align = alTop
       BevelOuter = bvNone
       Caption = 'Panel3'
-      TabOrder = 2
+      TabOrder = 0
       object Label6: TLabel
         Left = 0
         Top = 0

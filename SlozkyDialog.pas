@@ -102,21 +102,17 @@ end;
 
 procedure TSlozkyDlg.SlozkaPridatClick(Sender: TObject);
 begin
-  SlozkaDlg.Vycisti;
+  SlozkaDlg.Priprav;
   SlozkaDlg.GUID:=ExecutorNastaveni.VytvorGUID;
 
   if SlozkaDlg.ShowModal=mrOk then
   begin
     var v_slozka:=TSlozka.Create;
-    v_slozka.GUID:=SlozkaDlg.GUID;
-    v_slozka.Nazev:=SlozkaDlg.Nazev.Text;
     v_slozka.Poradi:=-1;
-
-    ExecutorNastaveni.UlozSlozku(v_slozka);
+    SlozkaDlg.Vystup(v_slozka);
+    NaplnSlozky;
 
     t_zmena:=True;
-
-    NaplnSlozky;
   end;
 end;
 
@@ -131,7 +127,7 @@ begin
     var v_slozkaguid:=ExecutorNastaveni.SlozkyPoradi[ListView1.ItemIndex];
     if ExecutorNastaveni.Slozky.TryGetValue(v_slozkaguid,v_slozka) then
     begin
-      if MessageDlg('Opravdu smazat složku '+v_slozka.Nazev+'? Smaže sa vèetnì databází v ní uložených',mtConfirmation,mbYesNo,0)=ord(mbYes) then
+      if MessageDlg('Opravdu smazat složku '+v_slozka.Nazev+'? Smaže sa vèetnì databází v ní uložených',mtConfirmation,mbYesNo,0)=mrYes then
       begin
         ExecutorNastaveni.SmazSlozku(v_slozka);
 
@@ -141,7 +137,6 @@ begin
       end;
     end;
   end;
-
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -155,18 +150,15 @@ begin
     var slozkaguid:=ExecutorNastaveni.SlozkyPoradi[ListView1.ItemIndex];
     if ExecutorNastaveni.Slozky.TryGetValue(slozkaguid,v_slozka) then
     begin
-      SlozkaDlg.Vycisti;
-      SlozkaDlg.Napln(v_slozka);
+      SlozkaDlg.Priprav;
+      SlozkaDlg.Vstup(v_slozka);
 
       if SlozkaDlg.ShowModal=mrOk then
       begin
-        v_slozka.Nazev:=SlozkaDlg.Nazev.Text;
-
-        ExecutorNastaveni.UlozSlozku(v_slozka);
+        SlozkaDlg.Vystup(v_slozka);
+        NaplnSlozky;
 
         t_zmena:=True;
-
-        NaplnSlozky;
       end;
     end;
   end;
@@ -183,20 +175,17 @@ begin
     var slozkaguid:=ExecutorNastaveni.SlozkyPoradi[ListView1.ItemIndex];
     if ExecutorNastaveni.Slozky.TryGetValue(slozkaguid,v_slozka) then
     begin
-      SlozkaDlg.Vycisti;
-      SlozkaDlg.Napln(v_slozka);
+      SlozkaDlg.Priprav;
+      SlozkaDlg.Vstup(v_slozka);
       SlozkaDlg.GUID:=ExecutorNastaveni.VytvorGUID;
 
       if SlozkaDlg.ShowModal=mrOk then
       begin
         v_slozka:=TSlozka.Create;
-        v_slozka.Nazev:=SlozkaDlg.Nazev.Text;
-
-        ExecutorNastaveni.UlozSlozku(v_slozka);
+        SlozkaDlg.Vystup(v_slozka);
+        NaplnSlozky;
 
         t_zmena:=True;
-
-        NaplnSlozky;
       end;
     end;
   end;
